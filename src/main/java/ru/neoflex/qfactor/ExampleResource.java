@@ -1,4 +1,4 @@
-package ru.neoflex;
+package ru.neoflex.qfactor;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

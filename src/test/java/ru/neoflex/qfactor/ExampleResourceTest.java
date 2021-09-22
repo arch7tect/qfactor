@@ -1,4 +1,4 @@
-package ru.neoflex;
+package ru.neoflex.qfactor;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
