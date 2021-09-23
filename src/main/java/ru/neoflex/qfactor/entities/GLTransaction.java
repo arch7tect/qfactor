@@ -12,15 +12,15 @@ import java.util.Date;
 @Data
 public class GLTransaction extends PanacheEntity {
     @ManyToOne
-    public GLRest debit;
+    public GLAccount debit;
     @ManyToOne
-    public GLRest credit;
+    public GLAccount credit;
     @ManyToOne
     public Currency currency;
     public BigDecimal amount;
     public Date date;
 
-    public static GLTransaction add(GLRest debit, GLRest credit, Currency currency, BigDecimal amount, Date date) {
+    public static GLTransaction add(GLAccount debit, GLAccount credit, Currency currency, BigDecimal amount, Date date) {
         GLTransaction transaction = new GLTransaction();
         transaction.debit = debit;
         transaction.credit = credit;

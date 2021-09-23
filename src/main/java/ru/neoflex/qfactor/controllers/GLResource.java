@@ -53,8 +53,14 @@ public class GLResource {
         GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", debit, currency).singleResultOptional().orElseGet(()->GLRest.add(debit, currency));
         GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", credit, currency).singleResultOptional().orElseGet(()->GLRest.add(credit, currency));
         dRest.amount = dRest.getAmount().subtract(amount);
+        if (dRest.amount.equals(BigDecimal.ZERO)) {
+            dRest.delete();
+        }
         cRest.amount = cRest.getAmount().add(amount);
-        return GLTransaction.add(dRest, cRest, currency, amount, date);
+        if (cRest.amount.equals(BigDecimal.ZERO)) {
+            cRest.delete();
+        }
+        return GLTransaction.add(debit, credit, currency, amount, date);
     }
 
     @Transactional
@@ -79,5 +85,6 @@ public class GLResource {
         transact(today, rub, na, ra, new BigDecimal(200));
         transact(today, rub, ra, oa, new BigDecimal(25));
         transact(today, usd, na, oa, new BigDecimal(10));
+        transact(today, usd, oa, ra, new BigDecimal(10));
     }
 }
