@@ -1,4 +1,4 @@
-package ru.neoflex.qfactor;
+package ru.neoflex.qfactor.controllers;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

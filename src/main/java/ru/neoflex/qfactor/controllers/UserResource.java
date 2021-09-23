@@ -1,7 +1,7 @@
-package ru.neoflex.qfactor;
+package ru.neoflex.qfactor.controllers;
 
-import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
+import ru.neoflex.qfactor.entities.User;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.event.Observes;
