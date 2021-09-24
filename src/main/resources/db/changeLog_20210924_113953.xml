@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1632472793257-1" author="orlov (generated)">
+        <createSequence incrementBy="1" sequenceName="hibernate_sequence" startValue="1"/>
+    </changeSet>
+    <changeSet id="1632472793257-2" author="orlov (generated)">
+        <createTable tableName="GLAccount">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_glaccount"/>
+            </column>
+            <column name="ledger_id" type="BIGINT"/>
+            <column name="party_id" type="BIGINT"/>
+            <column name="number" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-3" author="orlov (generated)">
+        <createTable tableName="GLRest">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_glrest"/>
+            </column>
+            <column name="glAccount_id" type="BIGINT"/>
+            <column name="currency_id" type="BIGINT"/>
+            <column name="amount" type="DECIMAL"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-4" author="orlov (generated)">
+        <createTable tableName="GLTransaction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_gltransaction"/>
+            </column>
+            <column name="debit_id" type="BIGINT"/>
+            <column name="credit_id" type="BIGINT"/>
+            <column name="currency_id" type="BIGINT"/>
+            <column name="amount" type="DECIMAL"/>
+            <column name="date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-5" author="orlov (generated)">
+        <createTable tableName="GeneralLedger">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_generalledger"/>
+            </column>
+            <column name="code" type="VARCHAR(32)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-6" author="orlov (generated)">
+        <createTable tableName="Party">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_party"/>
+            </column>
+            <column name="name" type="VARCHAR(128)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-7" author="orlov (generated)">
+        <createTable tableName="base_user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_base_user"/>
+            </column>
+            <column name="userName" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="role" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-8" author="orlov (generated)">
+        <createTable tableName="currency">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_currency"/>
+            </column>
+            <column name="code" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1632472793257-9" author="orlov (generated)">
+        <addUniqueConstraint columnNames="code" constraintName="uc_currency_code" tableName="currency"/>
+    </changeSet>
+    <changeSet id="1632472793257-10" author="orlov (generated)">
+        <addUniqueConstraint columnNames="code" constraintName="uc_generalledger_code" tableName="GeneralLedger"/>
+    </changeSet>
+    <changeSet id="1632472793257-11" author="orlov (generated)">
+        <addUniqueConstraint columnNames="name" constraintName="uc_party_name" tableName="Party"/>
+    </changeSet>
+    <changeSet id="1632472793257-12" author="orlov (generated)">
+        <createIndex indexName="ak_glaccount_ledger_number" tableName="GLAccount" unique="true">
+            <column name="ledger_id"/>
+            <column name="number"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1632472793257-14" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="ledger_id" baseTableName="GLAccount"
+                                 constraintName="FK_GLACCOUNT_ON_LEDGER" referencedColumnNames="id"
+                                 referencedTableName="GeneralLedger"/>
+
+        <createIndex indexName="idx_glaccount_ledger" tableName="GLAccount">
+            <column name="ledger_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1632472793257-15" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="party_id" baseTableName="GLAccount"
+                                 constraintName="FK_GLACCOUNT_ON_PARTY" referencedColumnNames="id"
+                                 referencedTableName="Party"/>
+    </changeSet>
+    <changeSet id="1632472793257-16" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="GLRest"
+                                 constraintName="FK_GLREST_ON_CURRENCY" referencedColumnNames="id"
+                                 referencedTableName="currency"/>
+    </changeSet>
+    <changeSet id="1632472793257-17" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="glAccount_id" baseTableName="GLRest"
+                                 constraintName="FK_GLREST_ON_GLACCOUNT" referencedColumnNames="id"
+                                 referencedTableName="GLAccount"/>
+    </changeSet>
+    <changeSet id="1632472793257-18" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="credit_id" baseTableName="GLTransaction"
+                                 constraintName="FK_GLTRANSACTION_ON_CREDIT" referencedColumnNames="id"
+                                 referencedTableName="GLAccount"/>
+    </changeSet>
+    <changeSet id="1632472793257-19" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="GLTransaction"
+                                 constraintName="FK_GLTRANSACTION_ON_CURRENCY" referencedColumnNames="id"
+                                 referencedTableName="currency"/>
+    </changeSet>
+    <changeSet id="1632472793257-20" author="orlov (generated)">
+        <addForeignKeyConstraint baseColumnNames="debit_id" baseTableName="GLTransaction"
+                                 constraintName="FK_GLTRANSACTION_ON_DEBIT" referencedColumnNames="id"
+                                 referencedTableName="GLAccount"/>
+    </changeSet>
+
+</databaseChangeLog>

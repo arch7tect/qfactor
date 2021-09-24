@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13.2
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      - POSTGRES_USER=qfactor
+      - POSTGRES_PASSWORD=qfactor
+      - POSTGRES_DB=qfactor
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
+      - qfactor_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  qfactor_data:
