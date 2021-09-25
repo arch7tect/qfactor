@@ -37,7 +37,7 @@
             <column name="credit_id" type="BIGINT"/>
             <column name="currency_id" type="BIGINT"/>
             <column name="amount" type="DECIMAL"/>
-            <column name="date" type="DATETIME"/>
+            <column name="date" type="DATE"/>
         </createTable>
     </changeSet>
     <changeSet id="1632472793257-5" author="orlov (generated)">

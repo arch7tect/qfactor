@@ -16,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class GLResource {
         return entityManager.createQuery(query).getResultList();
     }
 
-    public GLTransaction transact(Date date, Currency currency, GLAccount debit, GLAccount credit, BigDecimal amount) {
+    public GLTransaction transact(LocalDate date, Currency currency, GLAccount debit, GLAccount credit, BigDecimal amount) {
         GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", debit, currency).singleResultOptional().orElseGet(()->GLRest.add(debit, currency));
         GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", credit, currency).singleResultOptional().orElseGet(()->GLRest.add(credit, currency));
         dRest.amount = dRest.getAmount().subtract(amount);
@@ -80,7 +81,7 @@ public class GLResource {
         GLAccount na = GLAccount.add(gl, n, "N");
         GLAccount oa = GLAccount.add(gl, o, "O");
         GLAccount ra = GLAccount.add(gl, r, "R");
-        Date today = new Date();
+        LocalDate today = LocalDate.now();
         transact(today, rub, na, oa, new BigDecimal(100));
         transact(today, rub, na, ra, new BigDecimal(200));
         transact(today, rub, ra, oa, new BigDecimal(25));
