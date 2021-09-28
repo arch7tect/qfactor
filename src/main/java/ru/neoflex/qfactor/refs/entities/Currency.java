@@ -1,4 +1,4 @@
-package ru.neoflex.qfactor.entities;
+package ru.neoflex.qfactor.refs.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import lombok.Data;

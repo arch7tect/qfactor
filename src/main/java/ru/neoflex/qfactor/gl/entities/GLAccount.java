@@ -1,7 +1,8 @@
-package ru.neoflex.qfactor.entities;
+package ru.neoflex.qfactor.gl.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import lombok.Data;
+import ru.neoflex.qfactor.refs.entities.Party;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;

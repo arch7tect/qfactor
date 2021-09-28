@@ -1,26 +1,28 @@
-package ru.neoflex.qfactor.controllers;
+package ru.neoflex.qfactor.gl.controllers;
 
 import io.quarkus.runtime.StartupEvent;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
-import ru.neoflex.qfactor.entities.*;
+import ru.neoflex.qfactor.gl.entities.GLAccount;
+import ru.neoflex.qfactor.gl.entities.GLRest;
+import ru.neoflex.qfactor.gl.entities.GLTransaction;
+import ru.neoflex.qfactor.gl.entities.GeneralLedger;
+import ru.neoflex.qfactor.refs.entities.Currency;
+import ru.neoflex.qfactor.refs.entities.Party;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
-@Path("/gl")
+@Path("/api/gl")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @GraphQLApi
@@ -29,24 +31,29 @@ public class GLResource {
     EntityManager entityManager;
 
     @GET
-    @Path("/rests")
-    @Query("allRests")
-    @Description("Get all rests")
-    public List<GLRest> getRests() {
-        return GLRest.listAll();
+    @Path("/rests/{id}")
+    @Query("getRest")
+    @Description("Get Rest")
+    public Party getRest(@PathParam("id") Long id) {
+        return Party.findById(id);
     }
 
     @GET
     @Path("/rests")
-    @Query("filteredRests")
-    @Description("Get filtered rests")
-    public List<GLRest> getFilteredRests(String filter) {
-        return GLRest.find(filter).list();
+    @Query("getRestList")
+    @Description("Get Rest List")
+    public List<GLRest> getRestList(String filter) {
+        if (Objects.nonNull(filter)) {
+            return GLRest.find(filter).list();
+        }
+        else {
+            return GLRest.listAll();
+        }
     }
 
     @GET
     @Path("/query")
-    public List getQueryResults(String query) {
+    public List<Object> getQueryResults(String query) {
         return entityManager.createQuery(query).getResultList();
     }
 
