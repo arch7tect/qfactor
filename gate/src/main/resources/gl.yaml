@@ -1,0 +1,396 @@
+---
+openapi: 3.0.3
+info:
+  title: gl API
+  version: 1.0-SNAPSHOT
+paths:
+  /general-ledger:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralLedger'
+      responses:
+        "200":
+          description: OK
+  /general-ledger/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralLedger'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /gl-account:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLAccount'
+      responses:
+        "200":
+          description: OK
+  /gl-account/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLAccount'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /gl-rest:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLRest'
+      responses:
+        "200":
+          description: OK
+  /gl-rest/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLRest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /gl-transaction:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLTransaction'
+      responses:
+        "200":
+          description: OK
+  /gl-transaction/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLTransaction'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /gl/entity:
+    get:
+      operationId: getQueryResults
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+  /gl/rest:
+    get:
+      operationId: getRestList
+      parameters:
+        - name: filter
+          in: query
+          schema:
+            default: ""
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GLRest'
+components:
+  schemas:
+    GLAccount:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        ledger:
+          $ref: '#/components/schemas/GeneralLedger'
+        number:
+          type: string
+        partyId:
+          format: int64
+          type: integer
+    GLRest:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        amount:
+          type: number
+        currencyId:
+          format: int64
+          type: integer
+        glAccount:
+          $ref: '#/components/schemas/GLAccount'
+    GLTransaction:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        amount:
+          type: number
+        credit:
+          $ref: '#/components/schemas/GLAccount'
+        currencyId:
+          format: int64
+          type: integer
+        date:
+          format: date
+          type: string
+        debit:
+          $ref: '#/components/schemas/GLAccount'
+    GeneralLedger:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        code:
+          type: string
+        name:
+          type: string

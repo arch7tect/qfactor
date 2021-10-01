@@ -2,7 +2,6 @@ package ru.neoflex.qfactor.gl.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import lombok.Data;
-import ru.neoflex.qfactor.refs.entities.Party;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -18,14 +17,13 @@ import javax.persistence.Table;
 public class GLAccount extends PanacheEntity {
     @ManyToOne
     public GeneralLedger ledger;
-    @ManyToOne
-    public Party party;
+    public Long partyId;
     public String number;
 
-    public static GLAccount add(GeneralLedger ledger, Party party, String number) {
+    public static GLAccount add(GeneralLedger ledger, Long partyId, String number) {
         GLAccount glAccount = new GLAccount();
         glAccount.ledger = ledger;
-        glAccount.party = party;
+        glAccount.partyId = partyId;
         glAccount.number = number;
         glAccount.persist();
         return glAccount;

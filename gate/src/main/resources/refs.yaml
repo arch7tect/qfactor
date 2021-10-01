@@ -1,0 +1,220 @@
+---
+openapi: 3.0.3
+info:
+  title: refs API
+  version: 1.0-SNAPSHOT
+paths:
+  /currency:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+      responses:
+        "200":
+          description: OK
+  /currency/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /party:
+    get:
+      operationId: list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: array
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        "200":
+          description: OK
+  /party/{id}:
+    get:
+      operationId: get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /refs/currency:
+    get:
+      operationId: getCurrencyList
+      parameters:
+        - name: code
+          in: query
+          schema:
+            default: ""
+            type: string
+        - name: filter
+          in: query
+          schema:
+            default: ""
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Currency'
+  /refs/party:
+    get:
+      operationId: getPartyList
+      parameters:
+        - name: filter
+          in: query
+          schema:
+            default: ""
+            type: string
+        - name: name
+          in: query
+          schema:
+            default: ""
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Party'
+components:
+  schemas:
+    Currency:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        code:
+          type: string
+    Party:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string

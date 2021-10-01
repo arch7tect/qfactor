@@ -4,10 +4,13 @@ import io.quarkus.runtime.StartupEvent;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
+import org.eclipse.microprofile.graphql.Source;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import ru.neoflex.qfactor.gl.entities.GLAccount;
 import ru.neoflex.qfactor.gl.entities.GLRest;
 import ru.neoflex.qfactor.gl.entities.GLTransaction;
 import ru.neoflex.qfactor.gl.entities.GeneralLedger;
+import ru.neoflex.qfactor.gl.services.RefsService;
 import ru.neoflex.qfactor.refs.entities.Currency;
 import ru.neoflex.qfactor.refs.entities.Party;
 
@@ -29,13 +32,16 @@ import java.util.Objects;
 public class GLResource {
     @Inject
     EntityManager entityManager;
+    @Inject
+    @RestClient
+    RefsService refsService;
 
     @GET
     @Path("/rests/{id}")
     @Query("getRest")
     @Description("Get Rest")
-    public Party getRest(@PathParam("id") Long id) {
-        return Party.findById(id);
+    public GLRest getRest(@PathParam("id") Long id) {
+        return GLRest.findById(id);
     }
 
     @GET
@@ -57,9 +63,9 @@ public class GLResource {
         return entityManager.createQuery(query).getResultList();
     }
 
-    public GLTransaction transact(LocalDate date, Currency currency, GLAccount debit, GLAccount credit, BigDecimal amount) {
-        GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", debit, currency).singleResultOptional().orElseGet(()->GLRest.add(debit, currency));
-        GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currency=?2", credit, currency).singleResultOptional().orElseGet(()->GLRest.add(credit, currency));
+    public GLTransaction transact(LocalDate date, Long currencyId, GLAccount debit, GLAccount credit, BigDecimal amount) {
+        GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", debit, currencyId).singleResultOptional().orElseGet(()->GLRest.add(debit, currencyId));
+        GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", credit, currencyId).singleResultOptional().orElseGet(()->GLRest.add(credit, currencyId));
         dRest.amount = dRest.getAmount().subtract(amount);
         if (dRest.amount.equals(BigDecimal.ZERO)) {
             dRest.delete();
@@ -68,7 +74,19 @@ public class GLResource {
         if (cRest.amount.equals(BigDecimal.ZERO)) {
             cRest.delete();
         }
-        return GLTransaction.add(debit, credit, currency, amount, date);
+        return GLTransaction.add(debit, credit, currencyId, amount, date);
+    }
+
+    public ru.neoflex.qfactor.apis.Currency getCurrency(@Source GLRest glRest) {
+        return refsService.getCurrency(glRest.getCurrencyId());
+    }
+
+    public ru.neoflex.qfactor.apis.Currency getCurrency(@Source GLTransaction glTransaction) {
+        return refsService.getCurrency(glTransaction.currencyId);
+    }
+
+    public ru.neoflex.qfactor.apis.Party getParty(@Source GLAccount glAccount) {
+        return refsService.getParty(glAccount.partyId);
     }
 
     @Transactional
@@ -85,14 +103,14 @@ public class GLResource {
         Party o = Party.add("O");
         Party r = Party.add("R");
         GeneralLedger gl = GeneralLedger.add("def", "default");
-        GLAccount na = GLAccount.add(gl, n, "N");
-        GLAccount oa = GLAccount.add(gl, o, "O");
-        GLAccount ra = GLAccount.add(gl, r, "R");
+        GLAccount na = GLAccount.add(gl, n.id, "N");
+        GLAccount oa = GLAccount.add(gl, o.id, "O");
+        GLAccount ra = GLAccount.add(gl, r.id, "R");
         LocalDate today = LocalDate.now();
-        transact(today, rub, na, oa, new BigDecimal(100));
-        transact(today, rub, na, ra, new BigDecimal(200));
-        transact(today, rub, ra, oa, new BigDecimal(25));
-        transact(today, usd, na, oa, new BigDecimal(10));
-        transact(today, usd, oa, ra, new BigDecimal(10));
+        transact(today, rub.id, na, oa, new BigDecimal(100));
+        transact(today, rub.id, na, ra, new BigDecimal(200));
+        transact(today, rub.id, ra, oa, new BigDecimal(25));
+        transact(today, usd.id, na, oa, new BigDecimal(10));
+        transact(today, usd.id, oa, ra, new BigDecimal(10));
     }
 }

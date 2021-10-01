@@ -2,7 +2,6 @@ package ru.neoflex.qfactor.gl.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import lombok.Data;
-import ru.neoflex.qfactor.refs.entities.Currency;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -13,14 +12,13 @@ import java.math.BigDecimal;
 public class GLRest extends PanacheEntity {
     @ManyToOne
     public GLAccount glAccount;
-    @ManyToOne
-    public Currency currency;
+    public Long currencyId;
     public BigDecimal amount;
 
-    public static GLRest add(GLAccount glAccount, Currency currency) {
+    public static GLRest add(GLAccount glAccount, Long currencyId) {
         GLRest rest = new GLRest();
         rest.glAccount = glAccount;
-        rest.currency = currency;
+        rest.currencyId = currencyId;
         rest.amount = BigDecimal.ZERO;
         rest.persist();
         return rest;

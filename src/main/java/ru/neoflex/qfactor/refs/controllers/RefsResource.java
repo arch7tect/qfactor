@@ -18,20 +18,15 @@ import java.util.Objects;
 @Path("/api/refs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@GraphQLApi
 public class RefsResource {
     @GET
     @Path("/parties/{id}")
-    @Query("getParty")
-    @Description("Get Party")
     public Party getParty(@PathParam("id") Long id) {
         return Party.findById(id);
     }
 
     @GET
     @Path("/parties")
-    @Query("getPartyList")
-    @Description("Get Party List")
     public List<Party> getPartyList(@QueryParam("filter") String filter) {
         if (Objects.nonNull(filter)) {
             return Party.find(filter).list();
@@ -43,16 +38,12 @@ public class RefsResource {
 
     @GET
     @Path("/currencies/{id}")
-    @Query("getCurrency")
-    @Description("Get Currency")
     public Currency getCurrency(@PathParam("id") Long id) {
         return Currency.findById(id);
     }
 
     @GET
     @Path("/currencies")
-    @Query("getCurrencyList")
-    @Description("Get Currency List")
     public List<Currency> getCurrencyList(@QueryParam("filter") String filter) {
         if (Objects.nonNull(filter)) {
             return Currency.find(filter).list();
@@ -61,5 +52,4 @@ public class RefsResource {
             return Currency.listAll();
         }
     }
-
 }

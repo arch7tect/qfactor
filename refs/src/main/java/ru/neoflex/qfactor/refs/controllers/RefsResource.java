@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Path("/api/refs")
+@Path("/refs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RefsResource {
     @GET
-    @Path("/q/party")
+    @Path("/party")
     public List<Party> getPartyList(
             @DefaultValue("") @QueryParam("filter") String filter,
             @DefaultValue("") @QueryParam("name") String name
@@ -39,7 +39,7 @@ public class RefsResource {
     }
 
     @GET
-    @Path("/q/currency")
+    @Path("/currency")
     public List<Currency> getCurrencyList(
             @DefaultValue("") @QueryParam("filter") String filter,
             @DefaultValue("") @QueryParam("code") String code
