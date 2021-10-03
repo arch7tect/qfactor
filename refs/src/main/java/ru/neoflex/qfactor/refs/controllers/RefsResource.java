@@ -2,7 +2,7 @@ package ru.neoflex.qfactor.refs.controllers;
 
 import io.quarkus.panache.common.Sort;
 import io.quarkus.runtime.StartupEvent;
-import io.quarkus.runtime.util.StringUtil;
+import ru.neoflex.qfactor.common.controllers.BaseResource;
 import ru.neoflex.qfactor.refs.entities.Currency;
 import ru.neoflex.qfactor.refs.entities.Party;
 
@@ -10,49 +10,132 @@ import javax.enterprise.event.Observes;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Path("/refs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RefsResource {
-    @GET
-    @Path("/party")
-    public List<Party> getPartyList(
-            @DefaultValue("") @QueryParam("filter") String filter,
-            @DefaultValue("") @QueryParam("name") String name
-
-    ) {
-        if (Objects.nonNull(filter) && !filter.isBlank()) {
-            return Party.find(filter).list();
-        }
-
-        if (name != null && !name.isBlank()) {
-            return Party.find("name=?1", name).list();
-        }
-
-        return Party.listAll();
-    }
+public class RefsResource extends BaseResource {
 
     @GET
     @Path("/currency")
     public List<Currency> getCurrencyList(
-            @DefaultValue("") @QueryParam("filter") String filter,
-            @DefaultValue("") @QueryParam("code") String code
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("page") @DefaultValue("0") int pageIndex,
+            @QueryParam("size") @DefaultValue("20") int pageSize
     ) {
-        if (Objects.nonNull(filter) && !filter.isBlank()) {
-            return Currency.find(filter).list();
+        Sort sort = getSortFromQuery(sortQuery);
+        var query = Objects.nonNull(filter) && !filter.isBlank() ?
+                (sort != null ? Currency.find(filter, sort) : Currency.find(filter)) :
+                (sort != null ? Currency.findAll(sort) : Currency.findAll());
+        if (pageIndex > 0 && pageSize > 0) {
+            query = query.page(pageIndex, pageSize);
         }
+        return query.list();
+    }
 
-        if (Objects.nonNull(code) && !code.isBlank()) {
-            return Currency.find("code=?1", code).list();
+    @GET
+    @Path("/currency/{id}")
+    public Currency getCurrency(
+            @PathParam("id") Long id
+    ) {
+        Currency result = Currency.findById(id);
+        if (result == null) {
+            throw new WebApplicationException(404);
         }
+        return result;
+    }
 
-        return Currency.listAll();
+    @Transactional
+    @POST
+    @Path("/currency")
+    public Currency insertCurrency(
+            Currency entity
+    ) {
+        entityManager.persist(entity);
+        return entity;
+    }
+
+    @Transactional
+    @PUT
+    @Path("/currency/{id}")
+    public Currency updateCurrency(
+            @PathParam("id") Long id,
+            Currency entity
+    ) {
+        entity.id = id;
+        return entityManager.merge(entity);
+    }
+
+    @Transactional
+    @DELETE
+    @Path("/currency/{id}")
+    public void deleteCurrency(
+            @PathParam("id") Long id
+    ) {
+        entityManager.remove(getT(id));
+    }
+
+    @GET
+    @Path("/party")
+    public List<Party> getPartyList(
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("page") @DefaultValue("0") int pageIndex,
+            @QueryParam("size") @DefaultValue("20") int pageSize
+    ) {
+        Sort sort = getSortFromQuery(sortQuery);
+        var query = Objects.nonNull(filter) && !filter.isBlank() ?
+                (sort != null ? Party.find(filter, sort) : Party.find(filter)) :
+                (sort != null ? Party.findAll(sort) : Party.findAll());
+        if (pageIndex > 0 && pageSize > 0) {
+            query = query.page(pageIndex, pageSize);
+        }
+        return query.list();
+    }
+
+    @GET
+    @Path("/party/{id}")
+    public Party getParty(
+            @PathParam("id") Long id
+    ) {
+        Party result = Party.findById(id);
+        if (result == null) {
+            throw new WebApplicationException(404);
+        }
+        return result;
+    }
+
+    @Transactional
+    @POST
+    @Path("/party")
+    public Party insertParty(
+            Party entity
+    ) {
+        entityManager.persist(entity);
+        return entity;
+    }
+
+    @Transactional
+    @PUT
+    @Path("/party/{id}")
+    public Party updateParty(
+            @PathParam("id") Long id,
+            Party entity
+    ) {
+        entity.id = id;
+        return entityManager.merge(entity);
+    }
+
+    @Transactional
+    @DELETE
+    @Path("/party/{id}")
+    public void deleteParty(
+            @PathParam("id") Long id
+    ) {
+        entityManager.remove(getT(id));
     }
 
     @Transactional

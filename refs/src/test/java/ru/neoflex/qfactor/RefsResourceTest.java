@@ -12,7 +12,7 @@ public class RefsResourceTest {
     @Test
     public void testCurrenciesEndpoint() {
         given()
-                .when().get("/api/refs/currency")
+                .when().get("/refs/currency")
                 .then()
                 .statusCode(200)
                 .body("size()", is(2));
