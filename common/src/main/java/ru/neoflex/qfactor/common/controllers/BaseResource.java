@@ -3,25 +3,25 @@ package ru.neoflex.qfactor.common.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Sort;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.WebApplicationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class BaseResource {
     private static final Logger LOGGER = Logger.getLogger(BaseResource.class.getName());
 
-    @Inject
-    public EntityManager entityManager;
-
-    protected static Sort getSortFromQuery(List<String> sortQuery) {
+    protected static Sort getSortFromQuery(Optional<List<String>> sortQuery) {
         Sort result = null;
-        for (var q : sortQuery) {
+        for (var q : sortQuery.orElseGet(ArrayList::new)) {
             result = getSortFromQuery(result, q);
         }
         return result;
@@ -48,15 +48,16 @@ public class BaseResource {
     }
 
     protected <T extends PanacheEntity> List<T> getTList(
+            PanacheRepository<T> repository,
             String filter,
-            List<String> sortQuery,
+            Optional<List<String>> sortQuery,
             int pageIndex,
             int pageSize
     ) {
         Sort sort = getSortFromQuery(sortQuery);
         var query = Objects.nonNull(filter) && !filter.isBlank() ?
-                (sort != null ? T.find(filter, sort): T.find(filter)) :
-                (sort != null ? T.findAll(sort) : T.findAll());
+                (sort != null ? repository.find(filter, sort): repository.find(filter)) :
+                (sort != null ? repository.findAll(sort) : repository.findAll());
         if (pageIndex > 0 && pageSize > 0) {
             query = query.page(pageIndex, pageSize);
         }
@@ -64,9 +65,10 @@ public class BaseResource {
     }
 
     protected <T extends PanacheEntity> T getT(
+            PanacheRepository<T> repository,
             Long id
     ) {
-        T result = T.findById(id);
+        T result = repository.findById(id);
         if (result == null) {
             throw new WebApplicationException(404);
         }
@@ -74,27 +76,34 @@ public class BaseResource {
     }
 
     protected <T extends PanacheEntity> T insertT(
+            PanacheRepository<T> repository,
             T entity
     ) {
-        entityManager.persist(entity);
+        repository.persist(entity);
         return entity;
     }
 
     protected <T extends PanacheEntity> T updateT(
+            PanacheRepository<T> repository,
             Long id,
             T entity
     ) {
         entity.id = id;
-        return entityManager.merge(entity);
+        return repository.getEntityManager().merge(entity);
     }
 
     protected <T extends PanacheEntity> void deleteT(
+            PanacheRepository<T> repository,
             Long id
     ) {
-        entityManager.remove(getT(id));
+        repository.delete(getT(repository, id));
     }
 
-    protected List<Object> getQueryResults(String query, List<Object> params) throws JsonProcessingException {
+    protected  List<Object> getQueryResults(
+            EntityManager entityManager,
+            String query,
+            List<Object> params
+    ) throws JsonProcessingException {
         var q = entityManager.createQuery(query);
         var mapper = new ObjectMapper();
         for (var p: q.getParameters()) {

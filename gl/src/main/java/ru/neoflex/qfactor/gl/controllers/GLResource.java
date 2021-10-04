@@ -12,6 +12,10 @@ import ru.neoflex.qfactor.gl.entities.GLAccount;
 import ru.neoflex.qfactor.gl.entities.GLRest;
 import ru.neoflex.qfactor.gl.entities.GLTransaction;
 import ru.neoflex.qfactor.gl.entities.GeneralLedger;
+import ru.neoflex.qfactor.gl.services.GLAccountRepository;
+import ru.neoflex.qfactor.gl.services.GLRestRepository;
+import ru.neoflex.qfactor.gl.services.GLTransactionRepository;
+import ru.neoflex.qfactor.gl.services.GeneralLedgerRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,31 +23,37 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Path("/gl")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GLResource extends BaseResource {
+    @Inject
+    EntityManager entityManager;
+    @Inject
+    GeneralLedgerRepository generalLedgerRepository;
+    @Inject
+    GLAccountRepository glAccountRepository;
+    @Inject
+    GLRestRepository glRestRepository;
+    @Inject
+    GLTransactionRepository glTransactionRepository;
 
     @GET
     @Path("/rest")
     public List<GLRest> getRestList(
             @QueryParam("filter") @DefaultValue("") String filter,
-            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize
     ) {
-        Sort sort = getSortFromQuery(sortQuery);
-        var query = Objects.nonNull(filter) && !filter.isBlank() ?
-                (sort != null ? GLRest.find(filter, sort): GLRest.find(filter)) :
-                (sort != null ? GLRest.findAll(sort) : GLRest.findAll());
-        if (pageIndex > 0 && pageSize > 0) {
-            query = query.page(pageIndex, pageSize);
-        }
-        return query.list();
+        return super.getTList(glRestRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
     @GET
@@ -51,11 +61,7 @@ public class GLResource extends BaseResource {
     public GLRest getRest(
             @PathParam("id") Long id
     ) {
-        GLRest result = GLRest.findById(id);
-        if (result == null) {
-            throw new WebApplicationException(404);
-        }
-        return result;
+        return super.getT(glRestRepository, id);
     }
 
     @Transactional
@@ -64,8 +70,7 @@ public class GLResource extends BaseResource {
     public GLRest insertRest(
             GLRest entity
     ) {
-        entityManager.persist(entity);
-        return entity;
+        return super.insertT(glRestRepository, entity);
     }
 
     @Transactional
@@ -75,8 +80,7 @@ public class GLResource extends BaseResource {
             @PathParam("id") Long id,
             GLRest entity
     ) {
-        entity.id = id;
-        return entityManager.merge(entity);
+        return super.updateT(glRestRepository, id, entity);
     }
 
     @Transactional
@@ -85,25 +89,18 @@ public class GLResource extends BaseResource {
     public void deleteRest(
             @PathParam("id") Long id
     ) {
-        entityManager.remove(getRest(id));
+        super.deleteT(glRestRepository, id);
     }
 
     @GET
     @Path("/account")
     public List<GLAccount> getAccountList(
             @QueryParam("filter") @DefaultValue("") String filter,
-            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize
     ) {
-        Sort sort = getSortFromQuery(sortQuery);
-        var query = Objects.nonNull(filter) && !filter.isBlank() ?
-                (sort != null ? GLAccount.find(filter, sort): GLAccount.find(filter)) :
-                (sort != null ? GLAccount.findAll(sort) : GLAccount.findAll());
-        if (pageIndex > 0 && pageSize > 0) {
-            query = query.page(pageIndex, pageSize);
-        }
-        return query.list();
+        return super.getTList(glAccountRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
     @GET
@@ -111,11 +108,7 @@ public class GLResource extends BaseResource {
     public GLAccount getAccount(
             @PathParam("id") Long id
     ) {
-        GLAccount result = GLAccount.findById(id);
-        if (result == null) {
-            throw new WebApplicationException(404);
-        }
-        return result;
+        return super.getT(glAccountRepository, id);
     }
 
     @Transactional
@@ -124,8 +117,7 @@ public class GLResource extends BaseResource {
     public GLAccount insertAccount(
             GLAccount entity
     ) {
-        entityManager.persist(entity);
-        return entity;
+        return super.insertT(glAccountRepository, entity);
     }
 
     @Transactional
@@ -135,8 +127,7 @@ public class GLResource extends BaseResource {
             @PathParam("id") Long id,
             GLAccount entity
     ) {
-        entity.id = id;
-        return entityManager.merge(entity);
+        return super.updateT(glAccountRepository, id, entity);
     }
 
     @Transactional
@@ -145,25 +136,18 @@ public class GLResource extends BaseResource {
     public void deleteAccount(
             @PathParam("id") Long id
     ) {
-        entityManager.remove(getAccount(id));
+        super.deleteT(glAccountRepository, id);
     }
 
     @GET
     @Path("/transaction")
     public List<GLTransaction> getTransactionList(
             @QueryParam("filter") @DefaultValue("") String filter,
-            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize
     ) {
-        Sort sort = getSortFromQuery(sortQuery);
-        var query = Objects.nonNull(filter) && !filter.isBlank() ?
-                (sort != null ? GLTransaction.find(filter, sort): GLTransaction.find(filter)) :
-                (sort != null ? GLTransaction.findAll(sort) : GLTransaction.findAll());
-        if (pageIndex > 0 && pageSize > 0) {
-            query = query.page(pageIndex, pageSize);
-        }
-        return query.list();
+        return super.getTList(glTransactionRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
     @GET
@@ -171,11 +155,7 @@ public class GLResource extends BaseResource {
     public GLTransaction getTransaction(
             @PathParam("id") Long id
     ) {
-        GLTransaction result = GLTransaction.findById(id);
-        if (result == null) {
-            throw new WebApplicationException(404);
-        }
-        return result;
+        return super.getT(glTransactionRepository, id);
     }
 
     @Transactional
@@ -184,8 +164,7 @@ public class GLResource extends BaseResource {
     public GLTransaction insertTransaction(
             GLTransaction entity
     ) {
-        entityManager.persist(entity);
-        return entity;
+        return super.insertT(glTransactionRepository, entity);
     }
 
     @Transactional
@@ -195,8 +174,7 @@ public class GLResource extends BaseResource {
             @PathParam("id") Long id,
             GLTransaction entity
     ) {
-        entity.id = id;
-        return entityManager.merge(entity);
+        return super.updateT(glTransactionRepository, id, entity);
     }
 
     @Transactional
@@ -205,7 +183,7 @@ public class GLResource extends BaseResource {
     public void deleteTransaction(
             @PathParam("id") Long id
     ) {
-        entityManager.remove(getTransaction(id));
+        super.deleteT(glTransactionRepository, id);
     }
 
 
@@ -213,18 +191,11 @@ public class GLResource extends BaseResource {
     @Path("/general-ledger")
     public List<GeneralLedger> getGeneralLedgerList(
             @QueryParam("filter") @DefaultValue("") String filter,
-            @QueryParam("sort") @DefaultValue("") List<String> sortQuery,
+            @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize
     ) {
-        Sort sort = getSortFromQuery(sortQuery);
-        var query = Objects.nonNull(filter) && !filter.isBlank() ?
-                (sort != null ? GeneralLedger.find(filter, sort): GeneralLedger.find(filter)) :
-                (sort != null ? GeneralLedger.findAll(sort) : GeneralLedger.findAll());
-        if (pageIndex > 0 && pageSize > 0) {
-            query = query.page(pageIndex, pageSize);
-        }
-        return query.list();
+        return super.getTList(generalLedgerRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
     @GET
@@ -232,11 +203,7 @@ public class GLResource extends BaseResource {
     public GeneralLedger getGeneralLedger(
             @PathParam("id") Long id
     ) {
-        GeneralLedger result = GeneralLedger.findById(id);
-        if (result == null) {
-            throw new WebApplicationException(404);
-        }
-        return result;
+        return super.getT(generalLedgerRepository, id);
     }
 
     @Transactional
@@ -245,8 +212,7 @@ public class GLResource extends BaseResource {
     public GeneralLedger insertGeneralLedger(
             GeneralLedger entity
     ) {
-        entityManager.persist(entity);
-        return entity;
+        return super.insertT(generalLedgerRepository, entity);
     }
 
     @Transactional
@@ -256,8 +222,7 @@ public class GLResource extends BaseResource {
             @PathParam("id") Long id,
             GeneralLedger entity
     ) {
-        entity.id = id;
-        return entityManager.merge(entity);
+        return super.updateT(generalLedgerRepository, id, entity);
     }
 
     @Transactional
@@ -266,12 +231,19 @@ public class GLResource extends BaseResource {
     public void deleteGeneralLedger(
             @PathParam("id") Long id
     ) {
-        entityManager.remove(getGeneralLedger(id));
+        super.deleteT(generalLedgerRepository, id);
     }
 
     @POST
     @Path("/query")
     public List<Object> getQueryResults(@QueryParam("query") String query, List<Object> params) throws JsonProcessingException {
-        return super.getQueryResults(query, params);
+        return super.getQueryResults(entityManager, query, params);
+    }
+
+    @POST
+    @Path("/transact")
+    @Transactional
+    public GLTransaction transact(GLTransaction transaction) {
+        return glTransactionRepository.transact(transaction);
     }
 }

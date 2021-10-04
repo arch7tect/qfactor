@@ -4,170 +4,34 @@ info:
   title: refs API
   version: 1.0-SNAPSHOT
 paths:
-  /currency:
-    get:
-      operationId: list
-      parameters:
-        - name: page
-          in: query
-          schema:
-            format: int32
-            default: 0
-            type: integer
-        - name: size
-          in: query
-          schema:
-            format: int32
-            default: 20
-            type: integer
-        - name: sort
-          in: query
-          schema:
-            type: array
-      responses:
-        "200":
-          description: OK
-    post:
-      operationId: add
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Currency'
-      responses:
-        "200":
-          description: OK
-  /currency/{id}:
-    get:
-      operationId: get
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      responses:
-        "200":
-          description: OK
-    put:
-      operationId: update
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Currency'
-      responses:
-        "200":
-          description: OK
-    delete:
-      operationId: delete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      responses:
-        "200":
-          description: OK
-  /party:
-    get:
-      operationId: list
-      parameters:
-        - name: page
-          in: query
-          schema:
-            format: int32
-            default: 0
-            type: integer
-        - name: size
-          in: query
-          schema:
-            format: int32
-            default: 20
-            type: integer
-        - name: sort
-          in: query
-          schema:
-            type: array
-      responses:
-        "200":
-          description: OK
-    post:
-      operationId: add
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Party'
-      responses:
-        "200":
-          description: OK
-  /party/{id}:
-    get:
-      operationId: get
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      responses:
-        "200":
-          description: OK
-    put:
-      operationId: update
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Party'
-      responses:
-        "200":
-          description: OK
-    delete:
-      operationId: delete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            format: int64
-            type: integer
-      responses:
-        "200":
-          description: OK
   /refs/currency:
     get:
       operationId: getCurrencyList
       parameters:
-        - name: code
-          in: query
-          schema:
-            default: ""
-            type: string
         - name: filter
           in: query
           schema:
             default: ""
             type: string
+        - name: page
+          in: query
+          schema:
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: OK
@@ -177,6 +41,70 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Currency'
+    post:
+      operationId: insertCurrency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+  /refs/currency/{id}:
+    get:
+      operationId: getCurrency
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+    put:
+      operationId: updateCurrency
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+    delete:
+      operationId: deleteCurrency
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "204":
+          description: No Content
   /refs/party:
     get:
       operationId: getPartyList
@@ -186,11 +114,25 @@ paths:
           schema:
             default: ""
             type: string
-        - name: name
+        - name: page
           in: query
           schema:
-            default: ""
-            type: string
+            format: int32
+            default: 0
+            type: integer
+        - name: size
+          in: query
+          schema:
+            format: int32
+            default: 20
+            type: integer
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: OK
@@ -200,6 +142,92 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Party'
+    post:
+      operationId: insertParty
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+  /refs/party/{id}:
+    get:
+      operationId: getParty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+    put:
+      operationId: updateParty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+    delete:
+      operationId: deleteParty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "204":
+          description: No Content
+  /refs/query:
+    post:
+      operationId: getQueryResults
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
 components:
   schemas:
     Currency:

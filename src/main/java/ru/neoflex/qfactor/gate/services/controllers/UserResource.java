@@ -1,4 +1,4 @@
-package ru.neoflex.qfactor.controllers;
+package ru.neoflex.qfactor.gate.services.controllers;
 
 import io.quarkus.runtime.StartupEvent;
 import ru.neoflex.qfactor.entities.User;
