@@ -14,7 +14,6 @@ services:
       - POSTGRES_PASSWORD=qfactor
       - POSTGRES_DB=qfactor
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/
       - qfactor_data:/var/lib/postgresql/data
     ports:
       - 5432:5432

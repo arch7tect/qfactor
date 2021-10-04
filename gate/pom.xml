@@ -6,6 +6,11 @@
     <groupId>ru.neoflex.qfactor</groupId>
     <artifactId>gate</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>ru.neoflex</groupId>
+        <artifactId>qfactor</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <properties>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -18,23 +23,10 @@
         <quarkus.platform.version>2.2.3.Final</quarkus.platform.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>${quarkus.platform.artifact-id}</artifactId>
-                <version>${quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -112,41 +104,6 @@
         </dependency>
     </dependencies>
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.openapitools</groupId>
-                    <artifactId>openapi-generator-maven-plugin</artifactId>
-                    <version>5.2.0</version>
-                    <configuration>
-                        <generatorName>jaxrs-spec</generatorName>
-<!--                        <additionalProperties>interfaceOnly=true,useSwaggerAnnotations=false</additionalProperties>-->
-                        <configOptions>
-                            <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
-                            <interfaceOnly>true</interfaceOnly>
-                            <sourceFolder>src/main/java</sourceFolder>
-                            <useSwaggerAnnotations>false</useSwaggerAnnotations>
-<!--                            <useBeanValidation>false</useBeanValidation>-->
-                            <dateLibrary>java8</dateLibrary>
-                            <generatePom>false</generatePom>
-                            <disableHtmlEscaping>true</disableHtmlEscaping>
-                            <returnResponse>false</returnResponse>
-                            <openApiSpecFileLocation>${project.build.directory}/generated-sources/openapi/src/main/resources/META-INF</openApiSpecFileLocation>
-                            <library>quarkus</library>
-                        </configOptions>
-                        <configHelp>false</configHelp>
-                        <skipValidateSpec>false</skipValidateSpec>
-                        <generateApiTests>false</generateApiTests>
-                        <generateModels>true</generateModels>
-                        <generateModelTests>false</generateModelTests>
-                        <generateModelDocumentation>false</generateModelDocumentation>
-                        <generateSupportingFiles>false</generateSupportingFiles>
-                        <withXml>false</withXml>
-                        <skipValidateSpec>true</skipValidateSpec>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>

@@ -23,7 +23,7 @@ public class RefsResourceTest {
                 .when().get("/refs/currency")
                 .then()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(0));
     }
 
 }
