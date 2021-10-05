@@ -45,6 +45,52 @@ public class GateResource {
     RefsService refsService;
 
     @GET
+    @Path("/party")
+    @Query("getPartyList")
+    @Description("Get Party List")
+    public List<Party> getPartyList(
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("page") @DefaultValue("0") Integer page,
+            @QueryParam("size") @DefaultValue("0") Integer size,
+            @QueryParam("sort") List<String> sort
+    ) {
+        return refsService.getPartyList(filter, page, size, sort);
+    }
+
+    @GET
+    @Path("/party/{id}")
+    @Query("getParty")
+    @Description("Get Party")
+    public Party getParty(
+            @PathParam("id") Long id
+    ) {
+        return refsService.getParty(id);
+    }
+
+    @GET
+    @Path("/currency")
+    @Query("getCurrencyList")
+    @Description("Get Currency List")
+    public List<Currency> getCurrencyList(
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("page") @DefaultValue("0") Integer page,
+            @QueryParam("size") @DefaultValue("0") Integer size,
+            @QueryParam("sort") List<String> sort
+    ) {
+        return refsService.getCurrencyList(filter, page, size, sort);
+    }
+
+    @GET
+    @Path("/currency/{id}")
+    @Query("getCurrency")
+    @Description("Get Currency")
+    public Currency getCurrency(
+            @PathParam("id") Long id
+    ) {
+        return refsService.getCurrency(id);
+    }
+
+    @GET
     @Path("/rest")
     @Query("getRestList")
     @Description("Get Rest List")
@@ -55,6 +101,16 @@ public class GateResource {
             @QueryParam("sort") List<String> sort
     ) {
         return glService.getRestList(filter, page, size, sort);
+    }
+
+    @GET
+    @Path("/rest/{id}")
+    @Query("getRest")
+    @Description("Get Rest")
+    public GLRest getRest(
+            @PathParam("id") Long id
+    ) {
+        return glService.getRest(id);
     }
 
     @GET
@@ -70,6 +126,66 @@ public class GateResource {
         return glService.getAccountList(filter, page, size, sort);
     }
 
+    @GET
+    @Path("/account/{id}")
+    @Query("getAccount")
+    @Description("Get Account")
+    public GLAccount getAccount(
+            @PathParam("id") Long id
+    ) {
+        return glService.getAccount(id);
+    }
+
+    @GET
+    @Path("/transaction")
+    @Query("getTransactionList")
+    @Description("Get Transaction List")
+    public List<GLTransaction> getTransactionList(
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("page") @DefaultValue("0") Integer page,
+            @QueryParam("size") @DefaultValue("0") Integer size,
+            @QueryParam("sort") List<String> sort
+    ) {
+        return glService.getTransactionList(filter, page, size, sort);
+    }
+
+    @GET
+    @Path("/transaction/{id}")
+    @Query("getTransaction")
+    @Description("Get Transaction")
+    public GLTransaction getTransaction(
+            @PathParam("id") Long id
+    ) {
+        return glService.getTransaction(id);
+    }
+
+    //
+    // Data Loaders
+    //
+    public List<List<GLTransaction>> getDebits(@Source List<GLAccount> glAccounts) {
+        String ids = glAccounts.stream().
+                map(GLAccount::getId).
+                distinct().
+                map(Object::toString).
+                collect(Collectors.joining(","));
+        String query = String.format("from GLTransaction where debit.id in (%s)", ids);
+        var cMap = glService.getTransactionList(query, 0, 0, null).stream().
+                collect(Collectors.groupingBy(glTransaction -> glTransaction.getDebit().getId()));
+        return glAccounts.stream().map(glAccount -> cMap.get(glAccount.getId())).collect(Collectors.toList());
+    }
+
+    public List<List<GLTransaction>> getCredits(@Source List<GLAccount> glAccounts) {
+        String ids = glAccounts.stream().
+                map(GLAccount::getId).
+                distinct().
+                map(Object::toString).
+                collect(Collectors.joining(","));
+        String query = String.format("from GLTransaction where credit.id in (%s)", ids);
+        var cMap = glService.getTransactionList(query, 0, 0, null).stream().
+                collect(Collectors.groupingBy(glTransaction -> glTransaction.getCredit().getId()));
+        return glAccounts.stream().map(glAccount -> cMap.get(glAccount.getId())).collect(Collectors.toList());
+    }
+
     public List<List<GLRest>> getRests(@Source List<GLAccount> glAccounts) {
         String ids = glAccounts.stream().
                 map(GLAccount::getId).
@@ -80,6 +196,18 @@ public class GateResource {
         var cMap = glService.getRestList(query, 0, 0, null).stream().
                 collect(Collectors.groupingBy(glRest -> glRest.getGlAccount().getId()));
         return glAccounts.stream().map(glAccount -> cMap.get(glAccount.getId())).collect(Collectors.toList());
+    }
+
+    public List<List<GLAccount>> getAccounts(@Source List<Party> parties) {
+        String ids = parties.stream().
+                map(Party::getId).
+                distinct().
+                map(Object::toString).
+                collect(Collectors.joining(","));
+        String query = String.format("from GLAccount where partyId in (%s)", ids);
+        var cMap = glService.getAccountList(query, 0, 0, null).stream().
+                collect(Collectors.groupingBy(GLAccount::getPartyId));
+        return parties.stream().map(party -> cMap.get(party.getId())).collect(Collectors.toList());
     }
 
     public List<Currency> getCurrency(@Source List<GLRest> glRests) {
@@ -143,13 +271,13 @@ public class GateResource {
                 forEach(currency -> refsService.deleteCurrency(currency.getId()));
         Currency rub = refsService.insertCurrency(new Currency().code("RUB"));
         Currency usd = refsService.insertCurrency(new Currency().code("USD"));
-        Party n = refsService.insertParty(new Party().name("N"));
-        Party o = refsService.insertParty(new Party().name("O"));
-        Party r = refsService.insertParty(new Party().name("R"));
+        Party n = refsService.insertParty(new Party().name("SDM Bank"));
+        Party o = refsService.insertParty(new Party().name("Oleg"));
+        Party r = refsService.insertParty(new Party().name("Elena"));
         GeneralLedger gl = glService.insertGeneralLedger(new GeneralLedger().code("gl").name("General"));
-        GLAccount na = glService.insertAccount(new GLAccount().number("N").partyId(n.getId()).ledger(gl));
-        GLAccount oa = glService.insertAccount(new GLAccount().number("O").partyId(o.getId()).ledger(gl));
-        GLAccount ra = glService.insertAccount(new GLAccount().number("R").partyId(r.getId()).ledger(gl));
+        GLAccount na = glService.insertAccount(new GLAccount().number("S1234").partyId(n.getId()).ledger(gl));
+        GLAccount oa = glService.insertAccount(new GLAccount().number("O3939").partyId(o.getId()).ledger(gl));
+        GLAccount ra = glService.insertAccount(new GLAccount().number("E7984").partyId(r.getId()).ledger(gl));
         LocalDate today = LocalDate.now();
         glService.transact(
                 new GLTransaction().date(today).currencyId(rub.getId()).
