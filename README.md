@@ -8,7 +8,7 @@ docker-compose up -d
 ```
 [classes.puml](./doc/uml/classes.puml)
 
-![PlantUML model](http://www.plantuml.com/plantuml/svg/5Sox3G9130JGd2gWWNM8H7Ijc5d3dhIVmnwBzZcYbxqjgCuS_NBR9tfMI-_NHXxn477zblVEbiyCSwn9conOGzJHxZHGFYy5bylGeBdK1JaxGTS8YtByxyrcFVq1)
+![PlantUML model](http://www.plantuml.com/plantuml/png/5Sox3G9130JGd2gWWNM8H7Ijc5d3dhIVmnwBzZcYbxqjgCuS_NBR9tfMI-_NHXxn477zblVEbiyCSwn9conOGzJHxZHGFYy5bylGeBdK1JaxGTS8YtByxyrcFVq1)
 
 [GraphQL UI](http://localhost:9090/q/graphql-ui)
 ```
