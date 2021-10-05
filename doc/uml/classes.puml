@@ -1,36 +1,40 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class GeneralLedge {
-String code
-String name
+package refs {
+    class Party {
+        String name
+    }
+
+    class Currency {
+        String code
+    }
 }
 
-class Party {
-String name
-}
+package gl {
+    class GeneralLedge {
+        String code
+        String name
+    }
 
-class GLAccount {
-String number
-}
-GeneralLedge o-- GLAccount : ledger
-Party o-- GLAccount : party
+    class GLAccount {
+        String number
+    }
+    GeneralLedge o-- GLAccount : ledger
+    Party o-- GLAccount : party
 
-class Currency {
-String code
-}
+    class GLRest {
+        BigDecimal amount
+    }
+    Currency o-- GLRest : currency
+    GLAccount o-- GLRest : glAccount
 
-class GLRest {
-BigDecimal amount
+    class GLTransaction {
+        LocalDate date
+        BigDecimal amount
+    }
+    GLAccount o-- GLTransaction : debit
+    GLAccount o-- GLTransaction : credit
+    Currency o-- GLTransaction : currency
 }
-Currency o-- GLRest : currency
-GLAccount o-- GLRest : glAccount
-
-class GLTransaction {
-LocalDate date
-BigDecimal amount
-}
-GLAccount o-- GLTransaction : debit
-GLAccount o-- GLTransaction : credit
-Currency o-- GLTransaction : currency
 @enduml
