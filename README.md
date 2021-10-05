@@ -1,10 +1,10 @@
 
 ```shell script
 docker-compose up -d
-./mvnw.cmd -f common/pom.xml clean install
-./mvnw.cmd -f refs/pom.xml quarkus:dev
-./mvnw.cmd -f gl/pom.xml quarkus:dev
-./mvnw.cmd -f gate/pom.xml quarkus:dev
+./mvnw -f common/pom.xml clean install
+./mvnw -f refs/pom.xml quarkus:dev
+./mvnw -f gl/pom.xml quarkus:dev
+./mvnw -f gate/pom.xml quarkus:dev
 ```
 [classes.puml](./doc/uml/classes.puml)
 
