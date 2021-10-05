@@ -36,7 +36,7 @@ public class RefsResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(currencyRepository, filter, sortQuery, pageIndex, pageSize);
     }
@@ -83,7 +83,7 @@ public class RefsResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(partyRepository, filter, sortQuery, pageIndex, pageSize);
     }

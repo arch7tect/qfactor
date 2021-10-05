@@ -6,6 +6,7 @@ import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.graphql.Source;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 import ru.neoflex.qfactor.apis.gl.*;
 import ru.neoflex.qfactor.apis.refs.Currency;
 import ru.neoflex.qfactor.apis.refs.Party;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Path("/api/gate")
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 @GraphQLApi
 @ApplicationScoped
 public class GateResource {
+    private static final Logger LOGGER = Logger.getLogger(GateResource.class.getName());
+
     @Inject
     @RestClient
     GlService glService;
@@ -42,55 +46,89 @@ public class GateResource {
 
     @GET
     @Path("/rest")
-    @Query("getRest")
-    @Description("Get Rest")
+    @Query("getRestList")
+    @Description("Get Rest List")
     public List<GLRest> getRestList(
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("page") @DefaultValue("0") Integer page,
-            @QueryParam("size") @DefaultValue("20") Integer size,
-            @QueryParam("sort") Optional<List<String>> sort
+            @QueryParam("size") @DefaultValue("0") Integer size,
+            @QueryParam("sort") List<String> sort
     ) {
-        return glService.getRestList(filter, page, size, sort.orElse(null));
+        return glService.getRestList(filter, page, size, sort);
     }
 
-    public Currency getCurrency(@Source GLRest glRest) {
-        return refsService.getCurrency(glRest.getCurrencyId());
+    @GET
+    @Path("/account")
+    @Query("getAccountList")
+    @Description("Get Account List")
+    public List<GLAccount> getAccountList(
+            @QueryParam("filter") @DefaultValue("") String filter,
+            @QueryParam("page") @DefaultValue("0") Integer page,
+            @QueryParam("size") @DefaultValue("0") Integer size,
+            @QueryParam("sort") List<String> sort
+    ) {
+        return glService.getAccountList(filter, page, size, sort);
+    }
+
+    public List<List<GLRest>> getRests(@Source List<GLAccount> glAccounts) {
+        String ids = glAccounts.stream().
+                map(GLAccount::getId).
+                distinct().
+                map(Object::toString).
+                collect(Collectors.joining(","));
+        String query = String.format("from GLRest where glAccount.id in (%s)", ids);
+        var cMap = glService.getRestList(query, 0, 0, null).stream().
+                collect(Collectors.groupingBy(glRest -> glRest.getGlAccount().getId()));
+        return glAccounts.stream().map(glAccount -> cMap.get(glAccount.getId())).collect(Collectors.toList());
     }
 
     public List<Currency> getCurrency(@Source List<GLRest> glRests) {
         String ids = glRests.stream().
                 map(GLRest::getCurrencyId).
+                distinct().
                 map(Object::toString).
                 collect(Collectors.joining(","));
         String query = String.format("from Currency where id in (%s)", ids);
-        var cMap = new HashMap<Long, Currency>();
-        refsService.getCurrencyList(query, 0, -1, null).
-                forEach(currency -> cMap.put(currency.getId(), currency));
+        var cMap = refsService.getCurrencyList(query, 0, -1, null).stream().
+                collect(Collectors.toMap(Currency::getId, Function.identity()));
         return glRests.stream().map(glRest -> cMap.get(glRest.getCurrencyId())).collect(Collectors.toList());
     }
 
-    public Currency getCurrency(@Source GLTransaction glTransaction) {
-        return refsService.getCurrency(glTransaction.getCurrencyId());
-    }
-
-    public Party getParty(@Source GLAccount glAccount) {
-        return refsService.getParty(glAccount.getPartyId());
+    public List<Currency> getTransactionCurrency(@Source List<GLTransaction> glTransactions) {
+        String ids = glTransactions.stream().
+                map(GLTransaction::getCurrencyId).
+                distinct().
+                map(Object::toString).
+                collect(Collectors.joining(","));
+        String query = String.format("from Currency where id in (%s)", ids);
+        var idMap = refsService.getCurrencyList(query, 0, -1, null).stream().
+                collect(Collectors.toMap(Currency::getId, Function.identity()));
+        return glTransactions.stream().map(glTransaction -> idMap.get(glTransaction.getCurrencyId())).collect(Collectors.toList());
     }
 
     public List<Party> getParty(@Source List<GLAccount> glAccounts) {
         String ids = glAccounts.stream().
                 map(GLAccount::getPartyId).
+                distinct().
                 map(Object::toString).
                 collect(Collectors.joining(","));
         String query = String.format("from Party where id in (%s)", ids);
-        var pMap = new HashMap<Long, Party>();
-        refsService.getPartyList(query, 0, -1, null).
-                forEach(party -> pMap.put(party.getId(), party));
-        return glAccounts.stream().map(glAccount -> pMap.get(glAccount.getPartyId())).collect(Collectors.toList());
+        var idMap = refsService.getPartyList(query, 0, 0, null).stream().
+                collect(Collectors.toMap(Party::getId, Function.identity()));
+        return glAccounts.stream().map(glAccount -> idMap.get(glAccount.getPartyId())).collect(Collectors.toList());
     }
 
     @Transactional
     public void dataSeed(@Observes StartupEvent evt) {
+        try {
+            dataSeed();
+        }
+        catch (ProcessingException e) {
+            LOGGER.warn("Failed dataSeed: " + e.getMessage());
+        }
+    }
+
+    public void dataSeed() {
         glService.getRestList("", 0, -1, null).
                 forEach(rest -> glService.deleteRest(rest.getId()));
         glService.getTransactionList("", 0, -1, null).

@@ -51,7 +51,7 @@ public class GLResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(glRestRepository, filter, sortQuery, pageIndex, pageSize);
     }
@@ -98,7 +98,7 @@ public class GLResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(glAccountRepository, filter, sortQuery, pageIndex, pageSize);
     }
@@ -145,7 +145,7 @@ public class GLResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(glTransactionRepository, filter, sortQuery, pageIndex, pageSize);
     }
@@ -193,7 +193,7 @@ public class GLResource extends BaseResource {
             @QueryParam("filter") @DefaultValue("") String filter,
             @QueryParam("sort") Optional<List<String>> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize
+            @QueryParam("size") @DefaultValue("0") int pageSize
     ) {
         return super.getTList(generalLedgerRepository, filter, sortQuery, pageIndex, pageSize);
     }

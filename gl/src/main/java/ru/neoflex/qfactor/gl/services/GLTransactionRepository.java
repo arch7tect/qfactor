@@ -13,14 +13,16 @@ import java.time.LocalDate;
 public class GLTransactionRepository implements PanacheRepository<GLTransaction> {
 
     public GLTransaction transact(GLTransaction transaction) {
-        GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", transaction.debit, transaction.currencyId).singleResultOptional().orElseGet(()->GLRest.add(transaction.debit, transaction.currencyId));
-        GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", transaction.credit, transaction.currencyId).singleResultOptional().orElseGet(()->GLRest.add(transaction.credit, transaction.currencyId));
+        GLRest dRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", transaction.debit, transaction.currencyId).singleResultOptional().
+                orElseGet(()->GLRest.add(transaction.debit, transaction.currencyId));
+        GLRest cRest = (GLRest) GLRest.find("glAccount=?1 and currencyId=?2", transaction.credit, transaction.currencyId).singleResultOptional().
+                orElseGet(()->GLRest.add(transaction.credit, transaction.currencyId));
         dRest.amount = dRest.getAmount().subtract(transaction.amount);
-        if (dRest.amount.equals(BigDecimal.ZERO)) {
+        if (dRest.amount.compareTo(BigDecimal.ZERO) == 0) {
             dRest.delete();
         }
         cRest.amount = cRest.getAmount().add(transaction.amount);
-        if (cRest.amount.equals(BigDecimal.ZERO)) {
+        if (cRest.amount.compareTo(BigDecimal.ZERO) == 0) {
             cRest.delete();
         }
         getEntityManager().persist(transaction);

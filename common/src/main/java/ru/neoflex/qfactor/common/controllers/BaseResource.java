@@ -58,7 +58,7 @@ public class BaseResource {
         var query = Objects.nonNull(filter) && !filter.isBlank() ?
                 (sort != null ? repository.find(filter, sort): repository.find(filter)) :
                 (sort != null ? repository.findAll(sort) : repository.findAll());
-        if (pageIndex > 0 && pageSize > 0) {
+        if (pageIndex >= 0 && pageSize > 0) {
             query = query.page(pageIndex, pageSize);
         }
         return query.list();
