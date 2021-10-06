@@ -53,3 +53,51 @@ minikube config set vm-driver kvm2
 minikube config set container-runtime crio
 minikube config view
 ```
+
+Установка Helm
+```shell
+> choco install kubernetes-helm
+```
+
+Установка Keycloak
+```shell
+> helm repo add codecentric https://codecentric.github.io/helm-charts
+> kubectl create namespace keycloak
+> helm install keycloak --namespace keycloak codecentric/keycloak
+```
+Проверяем
+```shell
+> kubectl get all -n keycloak
+NAME                        READY   STATUS    RESTARTS   AGE
+pod/keycloak-0              1/1     Running   0          2m37s
+pod/keycloak-postgresql-0   1/1     Running   0          2m37s
+
+NAME                                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                    AGE
+service/keycloak-headless              ClusterIP   None            <none>        80/TCP                     2m37s
+service/keycloak-http                  ClusterIP   10.97.185.128   <none>        80/TCP,8443/TCP,9990/TCP   2m37s
+service/keycloak-postgresql            ClusterIP   10.97.164.16    <none>        5432/TCP                   2m37s
+service/keycloak-postgresql-headless   ClusterIP   None            <none>        5432/TCP                   2m37s
+
+NAME                                   READY   AGE
+statefulset.apps/keycloak              1/1     2m37s
+statefulset.apps/keycloak-postgresql   1/1     2m37s
+```
+Пробрасываем порт наружу
+```shell
+kubectl -n keycloak port-forward service/keycloak-http 8080:80
+```
+[Открываем браузер](http://localhost:8080/auth/)
+
+Инсталляция postgres
+```shell
+> kubectl apply -f k8s/postgres-cm.yaml
+> kubectl apply -f k8s/postgres-secret.yaml
+> kubectl apply -f k8s/postgres-pvc.yaml
+> kubectl apply -f k8s/postgres-deployment.yaml
+> kubectl apply -f k8s/postgres-svc.yaml
+```
+Проверяем из-под Administrator
+```shell
+> minikube service postgres --url
+http://172.23.24.68:30143
+```
