@@ -51,7 +51,7 @@ if exist "%HOME%\mavenrc_pre.cmd" call "%HOME%\mavenrc_pre.cmd"
 :skipRcPre
 
 @setlocal
-set JAVA_HOME=C:\Users\orlov\.jdks\temurin-11.0.12
+rem set JAVA_HOME=C:\Users\orlov\.jdks\temurin-11.0.12
 set ERROR_CODE=0
 
 @REM To isolate internal variables from possible post scripts, we use another setlocal
