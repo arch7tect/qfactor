@@ -149,7 +149,7 @@
                         <configuration>
                             <apiPackage>ru.neoflex.qfactor.apis.refs</apiPackage>
                             <modelPackage>ru.neoflex.qfactor.apis.refs</modelPackage>
-                            <inputSpec>${project.basedir}/src/main/resources/refs.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/../refs/src/main/resources/openapi.yaml</inputSpec>
                         </configuration>
                     </execution>
                     <execution>
@@ -160,7 +160,7 @@
                         <configuration>
                             <apiPackage>ru.neoflex.qfactor.apis.gl</apiPackage>
                             <modelPackage>ru.neoflex.qfactor.apis.gl</modelPackage>
-                            <inputSpec>${project.basedir}/src/main/resources/gl.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/../gl/src/main/resources/openapi.yaml</inputSpec>
                         </configuration>
                     </execution>
                 </executions>
