@@ -23,6 +23,8 @@ Client Version: version.Info{Major:"1", Minor:"22", GitVersion:"v1.22.0", GitCom
 
 Стартуем из PowerShell с правами Administrator
 ```shell
+> minikube config set memory 8192
+> minikube config set cpus 4
 > minikube start --vm-driver=hyperv
 ```
 
@@ -46,8 +48,6 @@ kubeconfig: Configured
 ```shell
 minikube stop
 minikube delete
-minikube config set memory 8192
-minikube config set cpus 4
 minikube config set kubernetes-version 1.16.2
 minikube config set vm-driver kvm2
 minikube config set container-runtime crio
@@ -100,4 +100,74 @@ kubectl -n keycloak port-forward service/keycloak-http 8080:80
 ```shell
 > minikube service postgres --url
 http://172.23.24.68:30143
+```
+
+Инсталляция ELK 
+```shell
+> helm repo add elastic https://helm.elastic.co
+> helm repo update
+```
+Elasticsearch
+```shell
+> helm install elasticsearch elastic/elasticsearch -f k8s/elasticsearch-values.yaml
+```
+Проверяем
+```shell
+> kubectl get all -l release=elasticsearch
+NAME                         READY   STATUS     RESTARTS   AGE
+pod/elasticsearch-master-0   0/1     Init:0/1   0          55s
+pod/elasticsearch-master-1   0/1     Init:0/1   0          55s
+pod/elasticsearch-master-2   0/1     Init:0/1   0          55s
+
+NAME                                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+service/elasticsearch-master            ClusterIP   10.106.57.40   <none>        9200/TCP,9300/TCP   55s
+service/elasticsearch-master-headless   ClusterIP   None           <none>        9200/TCP,9300/TCP   55s
+
+NAME                                    READY   AGE
+statefulset.apps/elasticsearch-master   0/3     55s
+kubectl port-forward service/elasticsearch-master 9200
+
+> curl http://localhost:9200
+StatusCode        : 200
+StatusDescription : OK
+Content           : {
+                      "name" : "elasticsearch-master-0",
+                      "cluster_name" : "elasticsearch",
+                      "cluster_uuid" : "DYkTv5-XQciAkd7vNekaMA",
+...                      
+```
+
+Kibana
+```shell
+> helm install kibana elastic/kibana  -f k8s/kibana-values.yaml --set fullnameOverride=qfactor-kibana
+```
+Проверяем
+```shell
+kubectl get all -l release=kibana
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/qfactor-kibana-7779cc65db-6btc2   1/1     Running   0          3m7s
+
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/qfactor-kibana   ClusterIP   10.109.242.112   <none>        5601/TCP   3m7s
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/qfactor-kibana   1/1     1            1           3m7s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/qfactor-kibana-7779cc65db   1         1         1       3m7s
+> kubectl port-forward service/qfactor-kibana 5601
+```
+Logstash
+```shell
+helm install -f k8s/logstash-values.yaml logstash elastic/logstash --set fullnameOverride=qfactor-logstash
+> kubectl get all -l chart=logstash
+NAME                     READY   STATUS    RESTARTS   AGE
+pod/qfactor-logstash-0   0/1     Pending   0          2m46s
+
+NAME                                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                       AGE
+service/qfactor-logstash            ClusterIP   10.110.114.39   <none>        5000/TCP,9600/TCP,12201/UDP   2m46s
+service/qfactor-logstash-headless   ClusterIP   None            <none>        9600/TCP                      2m46s
+
+NAME                                READY   AGE
+statefulset.apps/qfactor-logstash   0/1     2m46s
 ```
