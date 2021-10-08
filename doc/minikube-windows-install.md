@@ -171,3 +171,9 @@ service/qfactor-logstash-headless   ClusterIP   None            <none>        96
 NAME                                READY   AGE
 statefulset.apps/qfactor-logstash   0/1     2m46s
 ```
+Docker registry
+```shell
+> minikube addons enable registry
+> kubectl -n kube-system get pod
+> kubectl -n kube-system get svc
+```
