@@ -177,3 +177,29 @@ Docker registry
 > kubectl -n kube-system get pod
 > kubectl -n kube-system get svc
 ```
+Направляем локальный докер на репозиторий из k8s
+Windows
+```shell
+> minikube docker-env | Invoke-Expression
+```
+Linux
+```shell
+> eval $(minikube -p minikube docker-env)
+```
+Проверяем 
+```shell
+> docker images
+REPOSITORY                                     TAG       IMAGE ID       CREATED        SIZE
+k8s.gcr.io/kube-apiserver                      v1.22.2   e64579b7d886   3 weeks ago    128MB
+k8s.gcr.io/kube-controller-manager             v1.22.2   5425bcbd23c5   3 weeks ago    122MB
+k8s.gcr.io/kube-proxy                          v1.22.2   873127efbc8a   3 weeks ago    104MB
+k8s.gcr.io/kube-scheduler                      v1.22.2   b51ddc1014b0   3 weeks ago    52.7MB
+kubernetesui/dashboard                         v2.3.1    e1482a24335a   3 months ago   220MB
+k8s.gcr.io/etcd                                3.5.0-0   004811815584   3 months ago   295MB
+kubernetesui/metrics-scraper                   v1.0.7    7801cfc6d5c0   4 months ago   34.4MB
+k8s.gcr.io/coredns/coredns                     v1.8.4    8d147537fb7d   4 months ago   47.6MB
+gcr.io/k8s-minikube/storage-provisioner        v5        6e38f40d628d   6 months ago   31.5MB
+k8s.gcr.io/pause                               3.5       ed210e3e4a5b   6 months ago   683kB
+registry                                       <none>    678dfa38fcfa   9 months ago   26.2MB
+gcr.io/google_containers/kube-registry-proxy   <none>    60dc18151daf   4 years ago    188MB
+```
