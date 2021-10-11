@@ -9,6 +9,8 @@ Client Version: version.Info{Major:"1", Minor:"22", GitVersion:"v1.22.0", GitCom
 ```
 
 Проверить, что работает Hyper-V
+(для удобства можно текущего пользователя добавить в администраторы 
+Start->Computer Management->Local Users And Groups->Groups->Hyper-V Administrators->Add)
 из PowerShell с правами Administrator
 ```shell
 > Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
@@ -178,9 +180,9 @@ Docker registry
 > kubectl -n kube-system get svc
 ```
 Направляем локальный докер на репозиторий из k8s
-Windows
+Windows (под Administrator)
 ```shell
-> minikube docker-env | Invoke-Expression
+> minikube -p minikube docker-env | Invoke-Expression
 ```
 Linux
 ```shell
@@ -202,4 +204,19 @@ gcr.io/k8s-minikube/storage-provisioner        v5        6e38f40d628d   6 months
 k8s.gcr.io/pause                               3.5       ed210e3e4a5b   6 months ago   683kB
 registry                                       <none>    678dfa38fcfa   9 months ago   26.2MB
 gcr.io/google_containers/kube-registry-proxy   <none>    60dc18151daf   4 years ago    188MB
+```
+Настройка версии java
+В каталог %HOME% (C:\Users\<user>) помещаем файл mavenrc_pre.cmd
+```shell
+set JAVA_HOME=C:\Users\<user>\.jdks\temurin-11.0.12
+```
+Сборка приложения
+```shell
+> ./mvnw clean package -D quarkus.container-image.build=true
+```
+Старт приложения
+```shell
+> kubectl apply -f refs/target/kubernetes/kubernetes.yml
+> kubectl apply -f gl/target/kubernetes/kubernetes.yml
+> kubectl apply -f gate/target/kubernetes/kubernetes.yml
 ```
