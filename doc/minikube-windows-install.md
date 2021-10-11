@@ -173,6 +173,11 @@ service/qfactor-logstash-headless   ClusterIP   None            <none>        96
 NAME                                READY   AGE
 statefulset.apps/qfactor-logstash   0/1     2m46s
 ```
+Zipkin (трассировка)
+```shell
+kubectl apply -f k8s/jaeger-all-in-one.yaml
+kubectl port-forward service/jaeger-query 8888:80
+```
 Docker registry
 ```shell
 > minikube addons enable registry
