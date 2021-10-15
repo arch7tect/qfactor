@@ -1,12 +1,9 @@
 package ru.neoflex.qfactor.gl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.panache.common.Sort;
-import org.jboss.logging.Logger;
+import io.quarkus.security.Authenticated;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 import ru.neoflex.qfactor.common.controllers.BaseResource;
 import ru.neoflex.qfactor.gl.entities.GLAccount;
 import ru.neoflex.qfactor.gl.entities.GLRest;
@@ -17,20 +14,18 @@ import ru.neoflex.qfactor.gl.services.GLRestRepository;
 import ru.neoflex.qfactor.gl.services.GLTransactionRepository;
 import ru.neoflex.qfactor.gl.services.GeneralLedgerRepository;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
+@Authenticated
 @Path("/gl")
+@Tags(value = @Tag(name = "gl", description = "All general ledger methods"))
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GLResource extends BaseResource {
@@ -45,6 +40,7 @@ public class GLResource extends BaseResource {
     @Inject
     GLTransactionRepository glTransactionRepository;
 
+    @RolesAllowed("user")
     @GET
     @Path("/rest")
     public List<GLRest> getRestList(
@@ -56,6 +52,7 @@ public class GLResource extends BaseResource {
         return super.getTList(glRestRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("/rest/{id}")
     public GLRest getRest(
@@ -65,6 +62,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/rest")
     public GLRest insertRest(
@@ -74,6 +72,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/rest/{id}")
     public GLRest updateRest(
@@ -84,6 +83,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/rest/{id}")
     public void deleteRest(
@@ -92,6 +92,7 @@ public class GLResource extends BaseResource {
         super.deleteT(glRestRepository, id);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("/account")
     public List<GLAccount> getAccountList(
@@ -103,6 +104,7 @@ public class GLResource extends BaseResource {
         return super.getTList(glAccountRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("/account/{id}")
     public GLAccount getAccount(
@@ -112,6 +114,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/account")
     public GLAccount insertAccount(
@@ -121,6 +124,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/account/{id}")
     public GLAccount updateAccount(
@@ -131,6 +135,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/account/{id}")
     public void deleteAccount(
@@ -140,6 +145,7 @@ public class GLResource extends BaseResource {
     }
 
     @GET
+    @RolesAllowed("user")
     @Path("/transaction")
     public List<GLTransaction> getTransactionList(
             @QueryParam("filter") @DefaultValue("") String filter,
@@ -151,6 +157,7 @@ public class GLResource extends BaseResource {
     }
 
     @GET
+    @RolesAllowed("user")
     @Path("/transaction/{id}")
     public GLTransaction getTransaction(
             @PathParam("id") Long id
@@ -159,6 +166,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/transaction")
     public GLTransaction insertTransaction(
@@ -168,6 +176,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/transaction/{id}")
     public GLTransaction updateTransaction(
@@ -178,6 +187,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/transaction/{id}")
     public void deleteTransaction(
@@ -187,6 +197,7 @@ public class GLResource extends BaseResource {
     }
 
 
+    @RolesAllowed("user")
     @GET
     @Path("/general-ledger")
     public List<GeneralLedger> getGeneralLedgerList(
@@ -198,6 +209,7 @@ public class GLResource extends BaseResource {
         return super.getTList(generalLedgerRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("/general-ledger/{id}")
     public GeneralLedger getGeneralLedger(
@@ -207,6 +219,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/general-ledger")
     public GeneralLedger insertGeneralLedger(
@@ -216,6 +229,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/general-ledger/{id}")
     public GeneralLedger updateTransaction(
@@ -226,6 +240,7 @@ public class GLResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/general-ledger/{id}")
     public void deleteGeneralLedger(
@@ -235,12 +250,14 @@ public class GLResource extends BaseResource {
     }
 
     @POST
+    @RolesAllowed("admin")
     @Path("/query")
     public List<Object> getQueryResults(@QueryParam("query") String query, List<Object> params) throws JsonProcessingException {
         return super.getQueryResults(entityManager, query, params);
     }
 
     @POST
+    @RolesAllowed("admin")
     @Path("/transact")
     @Transactional
     public GLTransaction transact(GLTransaction transaction) {

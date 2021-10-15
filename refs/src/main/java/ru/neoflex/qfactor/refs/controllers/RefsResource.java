@@ -3,12 +3,16 @@ package ru.neoflex.qfactor.refs.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.security.Authenticated;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 import ru.neoflex.qfactor.common.controllers.BaseResource;
 import ru.neoflex.qfactor.refs.entities.Currency;
 import ru.neoflex.qfactor.refs.entities.Party;
 import ru.neoflex.qfactor.refs.services.CurrencyRepository;
 import ru.neoflex.qfactor.refs.services.PartyRepository;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,7 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Authenticated
 @Path("/refs")
+@Tags(value = @Tag(name = "ref", description = "All references methods"))
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RefsResource extends BaseResource {
@@ -30,6 +36,7 @@ public class RefsResource extends BaseResource {
     @Inject
     PartyRepository partyRepository;
 
+    @RolesAllowed("user")
     @GET
     @Path("/currency")
     public List<Currency> getCurrencyList(
@@ -41,6 +48,7 @@ public class RefsResource extends BaseResource {
         return super.getTList(currencyRepository, filter, sortQuery, pageIndex, pageSize);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("/currency/{id}")
     public Currency getCurrency(
@@ -50,6 +58,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/currency")
     public Currency insertCurrency(
@@ -59,6 +68,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/currency/{id}")
     public Currency updateCurrency(
@@ -69,6 +79,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/currency/{id}")
     public void deleteCurrency(
@@ -78,6 +89,7 @@ public class RefsResource extends BaseResource {
     }
 
     @GET
+    @RolesAllowed("user")
     @Path("/party")
     public List<Party> getPartyList(
             @QueryParam("filter") @DefaultValue("") String filter,
@@ -89,6 +101,7 @@ public class RefsResource extends BaseResource {
     }
 
     @GET
+    @RolesAllowed("user")
     @Path("/party/{id}")
     public Party getParty(
             @PathParam("id") Long id
@@ -97,6 +110,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @POST
     @Path("/party")
     public Party insertParty(
@@ -106,6 +120,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @PUT
     @Path("/party/{id}")
     public Party updateParty(
@@ -116,6 +131,7 @@ public class RefsResource extends BaseResource {
     }
 
     @Transactional
+    @RolesAllowed("admin")
     @DELETE
     @Path("/party/{id}")
     public void deleteParty(
@@ -124,6 +140,7 @@ public class RefsResource extends BaseResource {
         super.deleteT(partyRepository, id);
     }
 
+    @RolesAllowed("user")
     @POST
     @Path("/query")
     public List<Object> getQueryResults(@QueryParam("query") String query, List<Object> params) throws JsonProcessingException {

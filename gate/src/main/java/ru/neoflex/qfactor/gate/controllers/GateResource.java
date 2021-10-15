@@ -1,19 +1,25 @@
 package ru.neoflex.qfactor.gate.controllers;
 
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.security.Authenticated;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.graphql.Source;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
-import ru.neoflex.qfactor.apis.gl.*;
+import ru.neoflex.qfactor.apis.gl.GLAccount;
+import ru.neoflex.qfactor.apis.gl.GLRest;
+import ru.neoflex.qfactor.apis.gl.GLTransaction;
+import ru.neoflex.qfactor.apis.gl.GeneralLedger;
 import ru.neoflex.qfactor.apis.refs.Currency;
 import ru.neoflex.qfactor.apis.refs.Party;
 import ru.neoflex.qfactor.gate.services.GlService;
 import ru.neoflex.qfactor.gate.services.RefsService;
-import ru.neoflex.qfactor.apis.refs.RefsApi;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -22,14 +28,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Path("/api/gate")
+@Authenticated
+@Path("/gate")
+@Tags(value = @Tag(name = "gate", description = "GraphQL query methods"))
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @GraphQLApi
@@ -46,6 +51,7 @@ public class GateResource {
 
     @GET
     @Path("/party")
+    @RolesAllowed("user")
     @Query("getPartyList")
     @Description("Get Party List")
     public List<Party> getPartyList(
@@ -59,6 +65,7 @@ public class GateResource {
 
     @GET
     @Path("/party/{id}")
+    @RolesAllowed("user")
     @Query("getParty")
     @Description("Get Party")
     public Party getParty(
@@ -69,6 +76,7 @@ public class GateResource {
 
     @GET
     @Path("/currency")
+    @RolesAllowed("user")
     @Query("getCurrencyList")
     @Description("Get Currency List")
     public List<Currency> getCurrencyList(
@@ -82,6 +90,7 @@ public class GateResource {
 
     @GET
     @Path("/currency/{id}")
+    @RolesAllowed("user")
     @Query("getCurrency")
     @Description("Get Currency")
     public Currency getCurrency(
@@ -92,6 +101,7 @@ public class GateResource {
 
     @GET
     @Path("/rest")
+    @RolesAllowed("user")
     @Query("getRestList")
     @Description("Get Rest List")
     public List<GLRest> getRestList(
@@ -105,6 +115,7 @@ public class GateResource {
 
     @GET
     @Path("/rest/{id}")
+    @RolesAllowed("user")
     @Query("getRest")
     @Description("Get Rest")
     public GLRest getRest(
@@ -115,6 +126,7 @@ public class GateResource {
 
     @GET
     @Path("/account")
+    @RolesAllowed("user")
     @Query("getAccountList")
     @Description("Get Account List")
     public List<GLAccount> getAccountList(
@@ -128,6 +140,7 @@ public class GateResource {
 
     @GET
     @Path("/account/{id}")
+    @RolesAllowed("user")
     @Query("getAccount")
     @Description("Get Account")
     public GLAccount getAccount(
@@ -138,6 +151,7 @@ public class GateResource {
 
     @GET
     @Path("/transaction")
+    @RolesAllowed("user")
     @Query("getTransactionList")
     @Description("Get Transaction List")
     public List<GLTransaction> getTransactionList(
@@ -151,6 +165,7 @@ public class GateResource {
 
     @GET
     @Path("/transaction/{id}")
+    @RolesAllowed("user")
     @Query("getTransaction")
     @Description("Get Transaction")
     public GLTransaction getTransaction(

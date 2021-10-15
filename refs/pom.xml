@@ -131,6 +131,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-test-security</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>ru.neoflex.qfactor</groupId>
             <artifactId>common</artifactId>
             <version>1.0-SNAPSHOT</version>

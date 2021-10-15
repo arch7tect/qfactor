@@ -1,6 +1,7 @@
 package ru.neoflex.qfactor;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import org.junit.jupiter.api.Test;
 import ru.neoflex.qfactor.refs.controllers.RefsResource;
 
@@ -17,6 +18,7 @@ public class RefsResourceTest {
     RefsResource refsResource;
 
     @Test
+    @TestSecurity(user = "testUser", roles = {"admin", "user"})
     public void testCurrenciesEndpoint() {
         refsResource.getPartyList("", Optional.empty(), 0, 20);
         given()
